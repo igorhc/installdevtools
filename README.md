@@ -13,7 +13,7 @@ Este aplicativo Python3 é a solução definitiva para configurar um ambiente de
 
 1. Clone este repositório para sua máquina Ubuntu com:
 
-git clone https://github.com/igorhc/ubuntudevtoolsinstall/
+'git clone https://github.com/igorhc/ubuntudevtoolsinstall/'
 
 2. Entre no diretório do aplicativo e inicie a configuração com:
 
