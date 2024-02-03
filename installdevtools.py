@@ -58,6 +58,7 @@ def check_dependency_installed(dependency):
 def install_tool(tool_name):
     tool_install_commands = {
         "chrome": "wget -O /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install /tmp/google-chrome-stable_current_amd64.deb -y && rm /tmp/google-chrome-stable_current_amd64.deb",
+        "flareget": "wget -O /tmp/flareget_5.0-1_amd64.deb https://dl.flareget.com/downloads/files/flareget/debs/amd64/flareget_5.0-1_amd64.deb && sudo apt install /tmp/flareget_5.0-1_amd64.deb -y && rm /tmp/flareget_5.0-1_amd64.deb",
         "vscode": "wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - && sudo add-apt-repository \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" -y && sudo apt-get update && sudo apt-get install code -y",
         "sublime3": "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - && echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list && sudo apt-get update && sudo apt-get install sublime-text -y",
         "fnm": "curl -fsSL https://fnm.vercel.app/install | bash",
@@ -83,6 +84,7 @@ def install_tool(tool_name):
 def validate_tools(tools, parser):
     tools = {
         "chrome",
+        "flareget",
         "vscode",
         "sublime3",
         "fnm",
@@ -117,6 +119,7 @@ def detect_shell_and_configure_fnm():
 def check_tool_dependecy(tool):
     dependencies = {
         "chrome": "wget",
+        "flareget": "wget",
         "vscode": "wget",
         "sublime3": "wget",
         "fnm": "curl",
@@ -143,7 +146,7 @@ def main():
     parser = argparse.ArgumentParser(description='Configurador de Ambiente de Desenvolvimento para Ubuntu - Otimizado para Ubuntu 23.10')
 
     # Definindo os argumentos
-    parser.add_argument('-i', '--install', nargs='*', choices=['vscode', 'fnm', 'sublime3', 'chrome', 'spotify', 'all'])
+    parser.add_argument('-i', '--install', nargs='*', choices=['vscode', 'flareget', 'fnm', 'sublime3', 'chrome', 'spotify', 'all'])
     parser.add_argument('-p', '--purge', action='store_true', help='Executa a remoção completa do LibreOffice, liberando espaço no sistema.')
     parser.add_argument('-u', '--upgrade', action='store_true', help='Atualiza o sistema e suas aplicações para as últimas versões disponíveis.')
     args = parser.parse_args()
@@ -158,7 +161,7 @@ def main():
                 sys.exit(1)
             if tool == "all":
             # Especifica a ordem de instalação das ferramentas
-                for tool in ["fnm", "chrome", "sublime3", "vscode", "spotify"]:
+                for tool in ["fnm", "chrome", "flareget", "sublime3", "vscode", "spotify"]:
                     check_tool_dependecy(tool)
             else:
                 check_tool_dependecy(tool)
