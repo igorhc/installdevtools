@@ -138,8 +138,8 @@ def check_tool_dependecy(tool):
                 install_tool(tool)
 
 def main():
-    parser = argparse.ArgumentParser(description="Prepara o ambiente de desenvolvimento.")
-    parser.add_argument("-i", "--install", type=str, help="Instala as ferramentas especificadas (fnm, chrome, sublime3, vscode, spotify, all para todos). Separe por vírgula sem espaço.", nargs='+')
+    parser = argparse.ArgumentParser(description="Prepara o ambiente de desenvolvimento. Ferramenta para Ubuntu, testado no Ubuntu 23.10")
+    parser.add_argument("-i", "--install", type=str, help="Instala as ferramentas especificadas (fnm, chrome, sublime3, vscode, spotify, all para todos). Para instalar mais de um tool separe por vírgula sem espaço.", nargs='+')
     parser.add_argument("-p", "--purge", action="store_true", help="Executa o purge_tool para LibreOffice.")
     parser.add_argument("-u", "--upgrade", action="store_true", help="Executa o update_system.")
     args = parser.parse_args()

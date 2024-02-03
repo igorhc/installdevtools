@@ -14,14 +14,28 @@ Este aplicativo Python3 é a solução definitiva para configurar um ambiente de
 1. Clone este repositório para sua máquina Ubuntu com:
 
 ```sh
-git clone https://github.com/igorhc/ubuntudevtoolsinstall/
+git clone https://github.com/igorhc/installdevtools
+cd installdevtools
+cd installdevtools
+chmod +755 installdevtools.py
 ```
+
 2. Entre no diretório do aplicativo e inicie a configuração com:
 
+```sh
+./installdevtools.py
+usage: installdevtools.py [-h] [-i INSTALL [INSTALL ...]] [-p] [-u]
 
+Prepara o ambiente de desenvolvimento. Ferramenta para Ubuntu, testado no Ubuntu 23.10
 
-
-
+options:
+  -h, --help            show this help message and exit
+  -i INSTALL [INSTALL ...], --install INSTALL [INSTALL ...]
+                        Instala as ferramentas especificadas (fnm, chrome, sublime3, vscode, spotify, all para todos). Para instalar mais de um tool
+                        separe por vírgula sem espaço.
+  -p, --purge           Executa o purge_tool para LibreOffice.
+  -u, --upgrade         Executa o update_system.
+```
 
 4. Siga o assistente de instalação para selecionar e instalar os componentes desejados.
 
