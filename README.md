@@ -70,4 +70,3 @@ Contribuições são bem-vindas e incentivadas. Se você tem ideias de melhorias
 ## Licença
 
 Este projeto é distribuído sob a licença MIT, promovendo uma ampla liberdade de uso, modificação e distribuição.
-````
