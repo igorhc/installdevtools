@@ -23,26 +23,33 @@ def detect_shell():
 
 def configure_fnm(shell):
     fnm_env_command = 'eval "$(fnm env --use-on-cd)"'
+    
     if shell == "bash":
         profile_file = "~/.bashrc"
-        completion_command = "$(fnm completions --shell bash)"
     elif shell == "zsh":
         profile_file = "~/.zshrc"
-        completion_command = "$(fnm completions --shell zsh)"
+        
     else:
         print(f"Shell {shell} não é suportado para configuração do fnm.")
         return False
 
     # Adicionando configuração ao arquivo de perfil
+    diretorio_usuario = os.path.expanduser('~')
+    fnm_prompt = f"source {diretorio_usuario}/.local/share/fnm/fnm_prompt\n"
+    add_path_fnm= f"export PATH=\"{diretorio_usuario}/.local/share/fnm:$PATH\""
+    command = f"{diretorio_usuario}/.local/share/fnm/fnm completions --shell {shell} > {diretorio_usuario}/.local/share/fnm/fnm_prompt && echo {diretorio_usuario}/.local/share/fnm/fnm_prompt {diretorio_usuario}/{profile_file}"
+    result = subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
+
     try:
         with open(os.path.expanduser(profile_file), 'a') as file:
+    
+            file.write(f"\n#Adicionando PATH para o fnm\n{add_path_fnm}\n")
             file.write(f"\n# Configuração do fnm\n{fnm_env_command}\n")
-            file.write(f"# Autocompletar do fnm\n{completion_command}\n")
-        print(f"fnm configurado com sucesso para {shell}. Por favor, execute `source {profile_file}` ou reinicie seu terminal para aplicar as alterações.")
-        return True
+            file.write(f"\n# Configuração do autocomplet do fnm\n{fnm_prompt}\n")
+        print(f"fnm configurado com sucesso no {profile_file}!")
     except Exception as e:
-        print(f"Erro ao configurar fnm no {profile_file}: {e}")
-        return False
+        print(f"Erro ao configurar o fnm no  {profile_file}: {e}")
+
 
 def run_command(command, shell=False):
     try:
@@ -118,7 +125,7 @@ def install_tool(tool_name):
         "flareget": "wget -O /tmp/flareget_5.0-1_amd64.deb https://dl.flareget.com/downloads/files/flareget/debs/amd64/flareget_5.0-1_amd64.deb && sudo apt install /tmp/flareget_5.0-1_amd64.deb -y && rm /tmp/flareget_5.0-1_amd64.deb",
         "vscode": "wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - && sudo add-apt-repository \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" -y && sudo apt-get update && sudo apt-get install code -y",
         "sublime3": "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - && echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list && sudo apt-get update && sudo apt-get install sublime-text -y",
-        "fnm": "curl -fsSL https://fnm.vercel.app/install | bash",
+        "fnm": "curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell",
         "spotify": "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg | echo  \"deb http://repository.spotify.com stable non-free\" | sudo tee /etc/apt/sources.list.d/spotify.list && sudo apt-get update && sudo apt-get install spotify-client -y",
         "bash_autocomplete": "sudo apt-get install bash-completion -y && echo \"source /etc/bash_completion\" >> ~/.bashrc"
     }

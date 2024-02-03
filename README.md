@@ -37,7 +37,7 @@ Opções Disponíveis:
 -h, --help
 Mostra esta mensagem de ajuda e sai.
 
--i --install [vscode,fnm,sublime3,chrome,spotify,all]
+-i --install [vscode,fnm,sublime3,chrome,spotify,flareget,bash_autocomplete,all]
     Instala ferramentas específicas. Utilize -i seguido de uma ou mais ferramentas, separadas por vírgulas sem espaços. Exemplo: -i vscode,fnm para instalar o Visual Studio Code e o Fast Node Manager.
 
     Ferramentas disponíveis:
@@ -46,6 +46,8 @@ Mostra esta mensagem de ajuda e sai.
         sublime3: Instala o Sublime Text 3, um editor de texto leve e poderoso.
         chrome: Instala o Google Chrome, um navegador web rápido e seguro.
         spotify: Instala o Spotify, um serviço de streaming de música.
+        flareget: 
+        bash_autocomplete:
         all: Instala todas as ferramentas acima.
 
 -p, --purge
