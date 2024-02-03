@@ -56,7 +56,8 @@ Para instalar o Visual Studio Code e o Fast Node Manager, o comando seria:
 python3 installdevtools.py -i vscode,fnm
 
 Para atualizar o sistema, você utilizaria:
-python3 installdevtools.py -u```
+python3 installdevtools.py -u
+```
 
 ##Descrição Detalhada das Opções de Instalação:
 
