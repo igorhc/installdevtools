@@ -16,13 +16,12 @@ Transforme sua máquina Ubuntu em uma poderosa estação de trabalho de desenvol
 ```sh
 git clone https://github.com/igorhc/installdevtools
 cd installdevtools
-cd installdevtools
 chmod +755 installdevtools.py
 ```
 
 2. Entre no diretório do aplicativo e inicie a configuração com:
 
-````sh
+```sh
 python3 installdevtools.py
 usage: installdevtools.py [-h] [-i INSTALL [INSTALL ...]] [-p] [-u]
 
@@ -58,22 +57,6 @@ python3 installdevtools.py -i vscode,fnm
 Para atualizar o sistema, você utilizaria:
 python3 installdevtools.py -u
 ```
-
-##Descrição Detalhada das Opções de Instalação:
-
--i vscode - Instala o Visual Studio Code, um editor de código fonte desenvolvido pela Microsoft. Ele é amplamente reconhecido pela sua performance e suporte a uma vasta gama de linguagens de programação, além de possuir uma extensa biblioteca de extensões que ampliam suas funcionalidades.
-
--i fnm - Instala o Fast Node Manager (fnm), um gerenciador de versões para Node.js extremamente rápido e eficiente. Facilita a gestão de múltiplas versões do Node.js em uma única máquina, permitindo a fácil troca entre elas conforme necessário.
-
--i sublime3 - Realiza a instalação do Sublime Text 3, uma versão avançada deste popular editor de texto leve, mas poderoso. Conhecido por sua velocidade e interface de usuário minimalista, o Sublime Text oferece suporte a muitas linguagens de programação e ferramentas de marcação, com uma ampla variedade de plugins disponíveis.
-
--i chrome - Instala a versão mais recente do Google Chrome, um navegador web de alta velocidade, seguro e de uso gratuito, desenvolvido pelo Google. O Chrome é conhecido por sua interface de usuário simples, desempenho robusto e suporte extensivo a padrões web modernos.
-
--i spotify - Instala o Spotify, um serviço de streaming de música que oferece acesso a milhões de músicas, podcasts e vídeos de artistas de todo o mundo. O Spotify é uma ferramenta essencial para amantes da música, permitindo descobrir, ouvir e organizar suas músicas favoritas com facilidade.
-
--i all - Instala todas as ferramentas acima mencionadas, proporcionando um ambiente de desenvolvimento abrangente e atualizado, além de acesso a entretenimento de qualidade através do Spotify. Ideal para usuários que desejam configurar rapidamente um novo dispositivo com todas as suas ferramentas favoritas.
-
-Algumas destas ferramentas requerem o uso do curl ou do wget para serem instaladas. Durante o processo de instalação, é verificado se o curl ou o wget já estão presentes no sistema. Caso não estejam, o instalador procederá com a instalação desses componentes.
 
 ## Pré-requisitos
 
