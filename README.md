@@ -22,7 +22,7 @@ chmod +755 installdevtools.py
 
 2. Entre no diretório do aplicativo e inicie a configuração com:
 
-````sh
+```sh
 python3 installdevtools.py
 usage: installdevtools.py [-h] [-i INSTALL [INSTALL ...]] [-p] [-u]
 
