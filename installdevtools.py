@@ -120,7 +120,7 @@ def install_tool(tool_name):
         "sublime3": "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - && echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list && sudo apt-get update && sudo apt-get install sublime-text -y",
         "fnm": "curl -fsSL https://fnm.vercel.app/install | bash",
         "spotify": "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg | echo  \"deb http://repository.spotify.com stable non-free\" | sudo tee /etc/apt/sources.list.d/spotify.list && sudo apt-get update && sudo apt-get install spotify-client -y",
-        "bash_autocomplete": "sudo apt-get install bash-completion -y && echo \"source /etc/bash_completion\" >> ~/.bashrc && source ~/.bashrc"
+        "bash_autocomplete": "sudo apt-get install bash-completion -y && echo \"source /etc/bash_completion\" >> ~/.bashrc"
     }
     
     if tool_name in tool_install_commands:
@@ -155,21 +155,27 @@ def check_tool_dependecy(tool):
         "spotify": "curl",  # Adicionando `curl` como dependência para o Spotify
     }
 
+    if tool not in dependencies:
+        print(f"Ferramenta {tool} desconhecida.")
+        return False  # Caso a ferramenta não seja reconhecida
+
+    dependency = dependencies[tool]
+
+    # Caso a ferramenta não tenha dependências diretas, retorna True
+    if not dependency:
+        print(f"{tool} não tem dependências ou elas já estão satisfeitas.")
+        install_tool(tool)
+    else :
     # Verifica e instala dependências se necessário
-    if tool in dependencies:
-        dependency = dependencies[tool]
-        if dependency:
-            dependency_installed = check_dependency_installed(dependency)
-            if not dependency_installed:
-                print(f"{dependency} não está instalado. Tentando instalar...")
-                install_tool(tool)
-                success = install_dependency(dependency)
-                if not success:
-                    print(f"Não foi possível instalar {dependency}. Por favor, instale manualmente e tente novamente.")
-                    return False  # Retorna falso mas não sai do programa, permite que o script continue
-            else:
-                print(f"{dependency} já está instalado.")
-                install_tool(tool)
+        dependency_installed = check_dependency_installed(dependency)
+        if not dependency_installed:
+            success = install_dependency(dependency)
+            install_tool(tool)
+            if not success:
+                return False
+        else:
+            print(f"{dependency} já está instalado.")
+            install_tool(tool)
 
 def main():
     parser = argparse.ArgumentParser(description='Configurador de Ambiente de Desenvolvimento para Ubuntu - Otimizado para Ubuntu 23.10')
