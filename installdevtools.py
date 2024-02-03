@@ -5,6 +5,45 @@ import subprocess
 import sys
 import os
 
+import os
+import subprocess
+
+import os
+import subprocess
+
+def detect_shell():
+    shell = os.getenv("SHELL")
+    if 'bash' in shell:
+        return "bash"
+    elif 'zsh' in shell:
+        return "zsh"
+    else:
+        print("Shell não suportado.")
+        return None
+
+def configure_fnm(shell):
+    fnm_env_command = 'eval "$(fnm env --use-on-cd)"'
+    if shell == "bash":
+        profile_file = "~/.bashrc"
+        completion_command = "$(fnm completions --shell bash)"
+    elif shell == "zsh":
+        profile_file = "~/.zshrc"
+        completion_command = "$(fnm completions --shell zsh)"
+    else:
+        print(f"Shell {shell} não é suportado para configuração do fnm.")
+        return False
+
+    # Adicionando configuração ao arquivo de perfil
+    try:
+        with open(os.path.expanduser(profile_file), 'a') as file:
+            file.write(f"\n# Configuração do fnm\n{fnm_env_command}\n")
+            file.write(f"# Autocompletar do fnm\n{completion_command}\n")
+        print(f"fnm configurado com sucesso para {shell}. Por favor, execute `source {profile_file}` ou reinicie seu terminal para aplicar as alterações.")
+        return True
+    except Exception as e:
+        print(f"Erro ao configurar fnm no {profile_file}: {e}")
+        return False
+
 def run_command(command, shell=False):
     try:
         result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=shell)
@@ -18,6 +57,24 @@ def install_dependency(dependency):
     """Instala uma dependência."""
     print(f"Instalando {dependency}...")
     return run_command(["sudo", "apt-get", "install", dependency, "-y"])
+
+def validate_tools(tools, parser):
+    tools = {
+        "chrome",
+        "flareget",
+        "vscode",
+        "sublime3",
+        "fnm",
+        "spotify",
+        "bash_autocomplete",
+        "all"
+    }
+    for tool in tools:
+        if tool not in tools:
+            print(f"Erro: '{tool}' não é uma ferramenta suportada.")
+            parser.print_help()
+            return False
+    return True
 
 
 def update_system():
@@ -62,8 +119,10 @@ def install_tool(tool_name):
         "vscode": "wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - && sudo add-apt-repository \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" -y && sudo apt-get update && sudo apt-get install code -y",
         "sublime3": "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - && echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list && sudo apt-get update && sudo apt-get install sublime-text -y",
         "fnm": "curl -fsSL https://fnm.vercel.app/install | bash",
-        "spotify": "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg | echo  \"deb http://repository.spotify.com stable non-free\" | sudo tee /etc/apt/sources.list.d/spotify.list && sudo apt-get update && sudo apt-get install spotify-client -y"
+        "spotify": "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg | echo  \"deb http://repository.spotify.com stable non-free\" | sudo tee /etc/apt/sources.list.d/spotify.list && sudo apt-get update && sudo apt-get install spotify-client -y",
+        "bash_autocomplete": "sudo apt-get install bash-completion -y && echo \"source /etc/bash_completion\" >> ~/.bashrc && source ~/.bashrc"
     }
+    
     if tool_name in tool_install_commands:
         print(f"Instalando {tool_name}...")
         if not run_command(tool_install_commands[tool_name], shell=True):
@@ -71,50 +130,19 @@ def install_tool(tool_name):
             return False
 
         if tool_name == "fnm":
-            if not detect_shell_and_configure_fnm():
-                print("Falha ao configurar fnm.")
+            shell = detect_shell()
+            if shell and configure_fnm(shell):
+                print(f"{tool_name} instalado e configurado com sucesso.")
+            else:
                 return False
-
-        print(f"{tool_name} instalado com sucesso.")
+        else:
+            print(f"{tool_name} instalado com sucesso.")
         return True
     else:
         print(f"Ferramenta {tool_name} desconhecida.")
         return False
-
-def validate_tools(tools, parser):
-    tools = {
-        "chrome",
-        "flareget",
-        "vscode",
-        "sublime3",
-        "fnm",
-        "spotify",
-        "all"
-    }
-    for tool in tools:
-        if tool not in tools:
-            print(f"Erro: '{tool}' não é uma ferramenta suportada.")
-            parser.print_help()
-            return False
-    return True
-
-def detect_shell_and_configure_fnm():
-    shell = os.getenv('SHELL')
-    if 'bash' in shell:
-        config_file = os.path.expanduser("~/.bashrc")
-    elif 'zsh' in shell:
-        config_file = os.path.expanduser("~/.zshrc")
-    else:
-        print("Shell não suportado para configuração automática do fnm.")
-        return False
-
-    fnm_config = "\nexport PATH=\"$HOME/.fnm:$PATH\"\neval \"$(fnm env)\"\n"
-    with open(config_file, "a") as file:
-        file.write(fnm_config)
-    print(f"Configuração do fnm adicionada ao {config_file}.")
-
-    return True    
-
+ 
+    
 
 def check_tool_dependecy(tool):
     dependencies = {
@@ -123,6 +151,7 @@ def check_tool_dependecy(tool):
         "vscode": "wget",
         "sublime3": "wget",
         "fnm": "curl",
+        "bash_autocomplete": "",
         "spotify": "curl",  # Adicionando `curl` como dependência para o Spotify
     }
 
@@ -146,7 +175,7 @@ def main():
     parser = argparse.ArgumentParser(description='Configurador de Ambiente de Desenvolvimento para Ubuntu - Otimizado para Ubuntu 23.10')
 
     # Definindo os argumentos
-    parser.add_argument('-i', '--install', nargs='*', choices=['vscode', 'flareget', 'fnm', 'sublime3', 'chrome', 'spotify', 'all'])
+    parser.add_argument('-i', '--install', nargs='*', choices=['vscode', 'flareget', 'fnm', 'sublime3', 'chrome', 'spotify', 'bash_autocomplete', 'all'])
     parser.add_argument('-p', '--purge', action='store_true', help='Executa a remoção completa do LibreOffice, liberando espaço no sistema.')
     parser.add_argument('-u', '--upgrade', action='store_true', help='Atualiza o sistema e suas aplicações para as últimas versões disponíveis.')
     args = parser.parse_args()
@@ -161,7 +190,7 @@ def main():
                 sys.exit(1)
             if tool == "all":
             # Especifica a ordem de instalação das ferramentas
-                for tool in ["fnm", "chrome", "flareget", "sublime3", "vscode", "spotify"]:
+                for tool in ["fnm", "chrome", "flareget", "sublime3", "vscode", "bash_autocomplete", "spotify"]:
                     check_tool_dependecy(tool)
             else:
                 check_tool_dependecy(tool)
