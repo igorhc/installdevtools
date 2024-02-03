@@ -2,7 +2,6 @@
 
 import argparse
 import subprocess
-
 import sys
 import os
 
@@ -13,14 +12,6 @@ def run_command(command, shell=False):
         return True
     except subprocess.CalledProcessError as e:
         print(f"Erro ao executar o comando: {' '.join(command) if isinstance(command, list) else command}\nErro: {e.stderr}")
-        return False
-
-def check_dependency_installed(dependency):
-    """Verifica se uma dependência está instalada."""
-    try:
-        subprocess.run([dependency, "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except subprocess.CalledProcessError:
         return False
 
 def install_dependency(dependency):
@@ -64,15 +55,10 @@ def check_dependency_installed(dependency):
         print(f"{dependency} não está instalado.")
         return False
 
-def install_dependency(dependency):
-    """Instala uma dependência."""
-    print(f"Instalando {dependency}...")
-    return run_command(["sudo", "apt-get", "install", dependency, "-y"])
-
 def install_tool(tool_name):
     tool_install_commands = {
-        "chrome": "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install ./google-chrome-stable_current_amd64.deb -y",
-        "vscode": "wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - && sudo add-apt-repository \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" && sudo apt-get update && sudo apt-get install code -y",
+        "chrome": "wget -O /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install /tmp/google-chrome-stable_current_amd64.deb -y && rm /tmp/google-chrome-stable_current_amd64.deb",
+        "vscode": "wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add - && sudo add-apt-repository \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" -y && sudo apt-get update && sudo apt-get install code -y",
         "sublime3": "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - && echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list && sudo apt-get update && sudo apt-get install sublime-text -y",
         "fnm": "curl -fsSL https://fnm.vercel.app/install | bash",
         "spotify": "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg | echo  \"deb http://repository.spotify.com stable non-free\" | sudo tee /etc/apt/sources.list.d/spotify.list && sudo apt-get update && sudo apt-get install spotify-client -y"
@@ -93,6 +79,22 @@ def install_tool(tool_name):
     else:
         print(f"Ferramenta {tool_name} desconhecida.")
         return False
+
+def validate_tools(tools, parser):
+    tools = {
+        "chrome",
+        "vscode",
+        "sublime3",
+        "fnm",
+        "spotify",
+        "all"
+    }
+    for tool in tools:
+        if tool not in tools:
+            print(f"Erro: '{tool}' não é uma ferramenta suportada.")
+            parser.print_help()
+            return False
+    return True
 
 def detect_shell_and_configure_fnm():
     shell = os.getenv('SHELL')
@@ -138,10 +140,12 @@ def check_tool_dependecy(tool):
                 install_tool(tool)
 
 def main():
-    parser = argparse.ArgumentParser(description="Prepara o ambiente de desenvolvimento. Ferramenta para Ubuntu, testado no Ubuntu 23.10")
-    parser.add_argument("-i", "--install", type=str, help="Instala as ferramentas especificadas (fnm, chrome, sublime3, vscode, spotify, all para todos). Para instalar mais de um tool separe por vírgula sem espaço.", nargs='+')
-    parser.add_argument("-p", "--purge", action="store_true", help="Executa o purge_tool para LibreOffice.")
-    parser.add_argument("-u", "--upgrade", action="store_true", help="Executa o update_system.")
+    parser = argparse.ArgumentParser(description='Configurador de Ambiente de Desenvolvimento para Ubuntu - Otimizado para Ubuntu 23.10')
+
+    # Definindo os argumentos
+    parser.add_argument('-i', '--install', nargs='*', choices=['vscode', 'fnm', 'sublime3', 'chrome', 'spotify', 'all'])
+    parser.add_argument('-p', '--purge', action='store_true', help='Executa a remoção completa do LibreOffice, liberando espaço no sistema.')
+    parser.add_argument('-u', '--upgrade', action='store_true', help='Atualiza o sistema e suas aplicações para as últimas versões disponíveis.')
     args = parser.parse_args()
 
     if len(sys.argv) == 1:
@@ -150,6 +154,8 @@ def main():
 
     if args.install:
         for tool in args.install:
+            if not validate_tools(args.install, parser):
+                sys.exit(1)
             if tool == "all":
             # Especifica a ordem de instalação das ferramentas
                 for tool in ["fnm", "chrome", "sublime3", "vscode", "spotify"]:
