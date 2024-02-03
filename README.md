@@ -15,11 +15,16 @@ Transforme sua máquina Ubuntu em uma poderosa estação de trabalho de desenvol
 
 ```sh
 git clone https://github.com/igorhc/installdevtools
+```
+
+2. Entre no diretório do aplicativo e de as permissões de execução para o aplicativo:
+
+```sh
 cd installdevtools
 chmod +755 installdevtools.py
 ```
 
-2. Entre no diretório do aplicativo e inicie a configuração com:
+3. Sintaxe de uso do aplicativo:
 
 ```sh
 python3 installdevtools.py
